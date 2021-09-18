@@ -29,18 +29,26 @@ class LogisticRegressor():
         This returns an scalar
         """
         m = y.shape[1]
-        ones = np.ones((1,m))
 
-        diffY = ones - y
-        diffHyp = ones - hyp
-        tempHyp = np.where(hyp == 0, hyp, -10)
-        tempDiffHyp = np.where (diffHyp == 0, diffHyp, -10)
-        log1 = y * np.log(tempHyp, where=tempHyp > 0)
-        log2 = diffY * np.log(tempDiffHyp, where= tempDiffHyp > 0)
-        cost = (-1.0 / m) * np.sum(log1 + log2)
 
-        # if self.regularize:
-        #     Here you would know there is something else to do
+        if self.regularize:
+            cost = -1.0 / m * np.sum(y * np.log(hyp, out=np.zeros_like(hyp), where=(hyp != 0)) + (1 - y) * np.log(1 - hyp, out=np.zeros_like(hyp), where=((1- hyp) != 0)))
+            squareTheta = 0
+            for i in range(1, self.theta.shape[0]):
+                squareTheta = squareTheta + self.theta[i] ** 2
+            squareTheta = self.reg_factor / (2 * m) * squareTheta
+            cost = cost + squareTheta
+
+        else:
+            ones = np.ones((1,m))
+
+            #diffY = ones - y
+            #diffHyp = ones - hyp
+            #log1 = np.log(hyp, out=np.zeros_like(hyp), where=(hyp != 0))
+            #log2 = np.log(diffHyp, out = np.zeros_like(diffHyp), where= (diffHyp != 0))
+            #sum = -1.0 / m * np.sum(y * log1 + diffY * log2)
+
+            cost = -1.0 / m * np.sum(y * np.log(hyp, out=np.zeros_like(hyp), where=(hyp != 0)) + (1 - y) * np.log(1 - hyp, out=np.zeros_like(hyp), where=((1- hyp) != 0)))
         return cost
 
     def _cost_function_derivative(self, y_pred, y, X, m):
@@ -56,10 +64,22 @@ class LogisticRegressor():
         Your implementation must support regularization, so you will have two cases here, one for when regularization is requested and another one for when it is not.
 
         """
-        
-        gradient = 1.0 / m * np.sum(X * (y_pred- y), axis=1)
-        gradient = gradient.reshape(gradient.shape[0], -1)
-        return self.alpha * gradient
+        if self.regularize:
+            res = []
+            dif = y_pred - y
+            gradient = np.sum(dif * X[0,:])
+            res.append([gradient])
+
+            for i in range(1, self.theta.shape[0]):
+                gradient = np.sum(dif * X[i,:])
+                gradient = gradient + self.reg_factor / m * self.theta[i][0]      
+                res.append([gradient])
+            grad = np.asarray(res)
+            return self.alpha * grad / m
+        else:
+            gradient = 1.0 / m * np.sum(X * (y_pred- y), axis=1)
+            gradient = gradient.reshape(gradient.shape[0], -1)
+            return self.alpha * gradient
 
     def _hypothesis(self, X):
         """
@@ -105,7 +125,7 @@ class LogisticRegressor():
             self.costs.append(cost)
 
         print("Final theta is {} (cost: {})".format(self.theta.T, cost))
-
+        
     def predict(self, X):
         """
         Predicts the classes for the samples in the dataset X.
@@ -115,8 +135,8 @@ class LogisticRegressor():
         TODO: Implement this function to predict the class for the dataset X. You must return a (1 x m) array of 0|1. 
         The np.where function could be useful here to transform all outputs larger than 0.5 to 1.
         """
-        prediction = self.theta.T @ X
-        prediction = np.where(prediction >= 0.5, prediction, 1)
-        prediction = np.where(prediction < 0.5, prediction, 0)
+        prediction = self._hypothesis(X)
+        prediction = np.where(prediction >= 0.5, 1, prediction)
+        prediction = np.where(prediction < 0.5, 0, prediction)
         return prediction
         
