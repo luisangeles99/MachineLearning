@@ -28,8 +28,8 @@ class LogisticRegressor():
         Recall that the LR might be set to perform regularization, so you must have two cases: one for when regularization is required and one for when it is not.
         This returns an scalar
         """
-        m = len(y)
-        ones = np.ones((m))
+        m = y.shape[1]
+        ones = np.ones((1,m))
 
         diffY = ones - y
         diffHyp = ones - hyp
@@ -69,7 +69,8 @@ class LogisticRegressor():
         TODO: Implement this function to return a (1 x m) array with the list of predictions for each sample
         """
         partialResult = self.theta.T @ X
-        prediction = 1 / (1 + np.exp(-1.0 * partialResult))
+        prediction = 1 / (1 + np.exp(-partialResult))
+        
         
         return prediction
 
