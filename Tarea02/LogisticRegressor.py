@@ -2,7 +2,7 @@ import numpy as np
 
 
 class LogisticRegressor():
-    def __init__(self, alpha=0.1, epochs=1, regularize=False, reg_factor=0.1):
+    def __init__(self, alpha=0.1, epochs=1, regularize=False, reg_factor=.1):
         """
         Constructor
 
@@ -28,8 +28,9 @@ class LogisticRegressor():
         Recall that the LR might be set to perform regularization, so you must have two cases: one for when regularization is required and one for when it is not.
         This returns an scalar
         """
-        m = y.shape[1]
-
+        # According to the presentation here m = number of samples should be used instead of len(y) which gives us one.
+        #m = y.shape[1]
+        m = len(y) 
 
         if self.regularize:
             cost = -1.0 / m * np.sum(y * np.log(hyp, out=np.zeros_like(hyp), where=(hyp != 0)) + (1 - y) * np.log(1 - hyp, out=np.zeros_like(hyp), where=((1- hyp) != 0)))
@@ -40,13 +41,6 @@ class LogisticRegressor():
             cost = cost + squareTheta
 
         else:
-            ones = np.ones((1,m))
-
-            #diffY = ones - y
-            #diffHyp = ones - hyp
-            #log1 = np.log(hyp, out=np.zeros_like(hyp), where=(hyp != 0))
-            #log2 = np.log(diffHyp, out = np.zeros_like(diffHyp), where= (diffHyp != 0))
-            #sum = -1.0 / m * np.sum(y * log1 + diffY * log2)
 
             cost = -1.0 / m * np.sum(y * np.log(hyp, out=np.zeros_like(hyp), where=(hyp != 0)) + (1 - y) * np.log(1 - hyp, out=np.zeros_like(hyp), where=((1- hyp) != 0)))
         return cost
