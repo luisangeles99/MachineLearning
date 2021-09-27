@@ -22,8 +22,7 @@ class NeuralNetwork:
         Calculates the sigmoid for the elements in the array z
         TODO: Implement the sigmoid function over the specified array z. The output should be of the same dimensions as z
         """
-        empty_z = np.ones(z.shape)
-        return empty_z
+        return 1 / (1 + np.exp(-z))
 
     def _z(self, input, theta):
         """
@@ -38,14 +37,12 @@ class NeuralNetwork:
         m = input.shape[1]
 
 
-
-        return np.ones((k,m))
+        return theta @ input
 
     def _activation(self, z):
         """
         Calculates the activation for net input z (an array)
         """
-
         return self._sigmoid(z)
 
     def _initialize_weights(self):
@@ -87,9 +84,13 @@ class NeuralNetwork:
         # Recall that the self.activations (a list of numpy arrays) is already configured to hold these values.
         #! DO NOT MODIFY THE FIRST POSITION AT EACH ACTIVATION LAYER, as we know it is the bias unit and it should be left equals to 1.
 
-        netZ = self._z(self.activations[0], self.theta[0])
-
-
+        
+        for i in range(1, len(self.activations) - 1):
+            netZ = self._z(self.activations[i-1], self.theta[i-1])
+            activation = self._activation(netZ)
+            aux = self.activations[i]
+            activation[0, :] = aux[0, :]
+            self.activations[i] = activation
         pass
 
     def predict(self, X):
