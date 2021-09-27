@@ -45,6 +45,7 @@ class NeuralNetwork:
         """
         Calculates the activation for net input z (an array)
         """
+
         return self._sigmoid(z)
 
     def _initialize_weights(self):
@@ -86,7 +87,8 @@ class NeuralNetwork:
         # Recall that the self.activations (a list of numpy arrays) is already configured to hold these values.
         #! DO NOT MODIFY THE FIRST POSITION AT EACH ACTIVATION LAYER, as we know it is the bias unit and it should be left equals to 1.
 
-        
+        netZ = self._z(self.activations[0], self.theta[0])
+
 
         pass
 
