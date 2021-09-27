@@ -85,11 +85,11 @@ class NeuralNetwork:
         #! DO NOT MODIFY THE FIRST POSITION AT EACH ACTIVATION LAYER, as we know it is the bias unit and it should be left equals to 1.
 
         
-        for i in range(1, len(self.activations) - 1):
+        for i in range(1, len(self.activations)):
             netZ = self._z(self.activations[i-1], self.theta[i-1])
             activation = self._activation(netZ)
             aux = self.activations[i]
-            activation[0, :] = aux[0, :]
+            activation = np.vstack((aux[0, :], activation))
             self.activations[i] = activation
         pass
 
