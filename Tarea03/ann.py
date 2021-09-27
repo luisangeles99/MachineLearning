@@ -110,4 +110,4 @@ class NeuralNetwork:
 
         self._forward()
 
-        return self.activations[-1]
+        return self.activations[-1][1:]
